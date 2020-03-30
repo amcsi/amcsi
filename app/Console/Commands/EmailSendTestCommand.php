@@ -51,12 +51,23 @@ class EmailSendTestCommand extends Command
         }
         $email->setAsm((int) config('services.sendgrid.unsubscribe_group_id'));
         $email->setTemplateId(config('services.sendgrid.template_id'));
+        $contentId = 'contentId';
+        $email->addAttachment(
+            base64_encode(file_get_contents(__DIR__ . '/EmailSendTestCommand/blue.jpg')),
+            'image/jpeg',
+            'blue.jpg',
+            'inline',
+            $contentId
+        );
         $email->addDynamicTemplateDatas([
             'titleText' => 'Dynamic Title Text!',
             'firstParagraph' => 'This is an example paragraph text.',
             // This is how you set the subject for SendGrid template emails if you want a dynamic subject.
             // Also make sure that the template on the SendGrid interface has the subject: {{subject}}
             'subject' => 'Test subject',
+            // An example of referencing an attached image with cid.
+            // Though it's recommended to just link to an external image, because it's supported in all email clients.
+            'image' => "cid:$contentId",
         ]);
         $emailResponse = $sg->send($email);
         if (($statusCode = $emailResponse->statusCode()) !== 202) {
