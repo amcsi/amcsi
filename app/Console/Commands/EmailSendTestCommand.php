@@ -49,7 +49,11 @@ class EmailSendTestCommand extends Command
             $name = 'Test User ' . ($index + 1); // Assign a name to the user.
             $email->addTo($address, $name, ['name' => $name]);
         }
+        /* Always have an unsubscribe group, otherwise clicking on the Unsubscribe link (which is mandatory to place)
+           would result in a global unsubscribe, preventing the user from receiving such important emails such as
+           "forgot password" emails. https://sendgrid.com/docs/ui/sending-email/recipient-subscription-preferences/ */
         $email->setAsm((int) config('services.sendgrid.unsubscribe_group_id'));
+
         $email->setTemplateId(config('services.sendgrid.template_id'));
         $contentId = 'contentId';
         $email->addAttachment(
