@@ -1,13 +1,5 @@
 # Laravel SendGrid Example
 
-## Laravel Versions
-
-### Laravel 7
-For Laravel 7, install v3 of `s-ichikawa/laravel-sendgrid-driver`.
-
-### Laravel 6
-For Laravel 6, install v2. Also you use `MAIL_DRIVER` instead of of `MAIL_MAILER`.
-
 ## Etc
 
 ### Command

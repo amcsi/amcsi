@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Mail\Message;
-use Sichikawa\LaravelSendgridDriver\Transport\SendgridTransport;
+use SendGrid;
+use SendGrid\Mail\Mail;
 
 class EmailSendTestCommand extends Command
 {
@@ -34,6 +34,7 @@ class EmailSendTestCommand extends Command
 
     /**
      * Execute the console command.
+     * @throws SendGrid\Mail\TypeException
      */
     public function handle()
     {
@@ -41,27 +42,20 @@ class EmailSendTestCommand extends Command
             throw new \LogicException('You must have the MAIL_FROM_ADDRESS env var set.');
         }
 
-        \Mail::send([], [], function (Message $message) {
-            /** @noinspection PhpParamsInspection */
-            $message
-                ->to($this->option('to'))
-                ->embedData([
-                    'personalizations' => [
-                        [
-                            'dynamic_template_data' => [
-                                'title' => 'Subject',
-                                'name'  => 's-ichikawa',
-                            ],
-                        ],
-                    ],
-                    'asm' => [
-                        'group_id' => (int) config('services.sendgrid.unsubscribe_group_id')
-                    ],
-                    'template_id' => config('services.sendgrid.template_id'),
-                    'dynamic_template_data' => [
-                        'titleText' => 'Dynamic Title Text!',
-                    ],
-                ], SendgridTransport::SMTP_API_NAME);
-        });
+        $sg = new SendGrid(config('services.sendgrid.api_key'));
+        $email = new Mail();
+        $email->setFrom(config('mail.from.address'), config('mail.from.name'));
+        $email->addTo($this->option('to'), 'Test user');
+        $email->setAsm((int) config('services.sendgrid.unsubscribe_group_id'));
+        $email->setTemplateId(config('services.sendgrid.template_id'));
+        $email->addDynamicTemplateDatas([
+            'titleText' => 'Dynamic Title Text!',
+        ]);
+        $emailResponse = $sg->send($email);
+        if (($statusCode = $emailResponse->statusCode()) !== 202) {
+            throw new \RuntimeException("Could not send email. Status code $statusCode:\n{$emailResponse->body()}");
+        }
+
+        echo "Email sent.\n";
     }
 }
