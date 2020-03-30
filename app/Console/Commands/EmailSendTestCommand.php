@@ -50,6 +50,9 @@ class EmailSendTestCommand extends Command
         $email->setTemplateId(config('services.sendgrid.template_id'));
         $email->addDynamicTemplateDatas([
             'titleText' => 'Dynamic Title Text!',
+            // This is how you set the subject for SendGrid template emails if you want a dynamic subject.
+            // Also make sure that the template on the SendGrid interface has the subject: {{subject}}
+            'subject' => 'Test subject',
         ]);
         $emailResponse = $sg->send($email);
         if (($statusCode = $emailResponse->statusCode()) !== 202) {
