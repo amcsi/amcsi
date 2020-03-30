@@ -6,6 +6,8 @@
 
 `php artisan io:email-test --to=<address>`
 
+You can add multiple `--to=<address>` arguments to send to multiple email addresses. You can test sending to multiple users with different names to see different "Dear {{name}}," placeholders replaced.
+
 ### Env vars
 
 ```dotenv

@@ -13,7 +13,7 @@ class EmailSendTestCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'io:email-test {--to=}';
+    protected $signature = 'io:email-test {--to=*}';
 
     /**
      * The console command description.
@@ -45,11 +45,15 @@ class EmailSendTestCommand extends Command
         $sg = new SendGrid(config('services.sendgrid.api_key'));
         $email = new Mail();
         $email->setFrom(config('mail.from.address'), config('mail.from.name'));
-        $email->addTo($this->option('to'), 'Test user');
+        foreach ($this->option('to') as $index => $address) {
+            $name = 'Test User ' . ($index + 1); // Assign a name to the user.
+            $email->addTo($address, $name, ['name' => $name]);
+        }
         $email->setAsm((int) config('services.sendgrid.unsubscribe_group_id'));
         $email->setTemplateId(config('services.sendgrid.template_id'));
         $email->addDynamicTemplateDatas([
             'titleText' => 'Dynamic Title Text!',
+            'firstParagraph' => 'This is an example paragraph text.',
             // This is how you set the subject for SendGrid template emails if you want a dynamic subject.
             // Also make sure that the template on the SendGrid interface has the subject: {{subject}}
             'subject' => 'Test subject',
