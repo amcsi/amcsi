@@ -58,6 +58,9 @@ class EmailSendTestCommand extends Command
                         'group_id' => (int) config('services.sendgrid.unsubscribe_group_id')
                     ],
                     'template_id' => config('services.sendgrid.template_id'),
+                    'dynamic_template_data' => [
+                        'titleText' => 'Dynamic Title Text!',
+                    ],
                 ], SendgridTransport::SMTP_API_NAME);
         });
     }
