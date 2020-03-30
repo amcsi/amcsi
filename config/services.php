@@ -30,4 +30,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'sendgrid' => [
+        'api_key' => env('SENDGRID_API_KEY'),
+        'template_id' => env('SENDGRID_TEMPLATE_ID'),
+        'unsubscribe_group_id' => env('SENDGRID_UNSUBSCRIBE_GROUP_ID'),
+    ],
 ];
