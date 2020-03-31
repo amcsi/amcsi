@@ -48,6 +48,11 @@ class EmailSendTestCommand extends Command
         // Set what address and name to send from.
         $email->setFrom(config('mail.from.address'), config('mail.from.name'));
 
+        $subject = 'Test subject';
+        // NOTE: setting the subject the following way is ignored if you use SendGrid templates.
+        // See addDynamicTemplateDatas() lower down to see what you need to do in case of dynamic templates.
+        $email->setSubject($subject);
+
         // Add recipients.
         foreach ($this->option('to') as $index => $address) {
             $name = 'Test User ' . ($index + 1); // Assign a name to the user.
@@ -85,7 +90,7 @@ class EmailSendTestCommand extends Command
             ],
             // This is how you set the subject for SendGrid template emails if you want a dynamic subject.
             // Also make sure that the template on the SendGrid interface has the subject: {{subject}}
-            'subject' => 'Test subject',
+            'subject' => $subject,
             // An example of referencing an attached image with cid.
             // Though it's recommended to just link to an external image, because it's supported in all email clients.
             'image' => "cid:$contentId",
