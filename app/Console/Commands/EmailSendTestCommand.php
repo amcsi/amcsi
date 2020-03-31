@@ -44,7 +44,11 @@ class EmailSendTestCommand extends Command
 
         $sg = new SendGrid(config('services.sendgrid.api_key'));
         $email = new Mail();
+
+        // Set what address and name to send from.
         $email->setFrom(config('mail.from.address'), config('mail.from.name'));
+
+        // Add recipients.
         foreach ($this->option('to') as $index => $address) {
             $name = 'Test User ' . ($index + 1); // Assign a name to the user.
             $email->addTo($address, $name, ['name' => $name]);
@@ -54,7 +58,7 @@ class EmailSendTestCommand extends Command
            "forgot password" emails. https://sendgrid.com/docs/ui/sending-email/recipient-subscription-preferences/ */
         $email->setAsm((int) config('services.sendgrid.unsubscribe_group_id'));
 
-        $email->setTemplateId(config('services.sendgrid.template_id'));
+        // Attach an image.
         $contentId = 'contentId';
         $email->addAttachment(
             base64_encode(file_get_contents(__DIR__ . '/EmailSendTestCommand/blue.jpg')),
@@ -63,6 +67,11 @@ class EmailSendTestCommand extends Command
             'inline',
             $contentId
         );
+
+        /* Templates and variables */
+
+        // Set which template to use (unless you want to provide the html yourself).
+        $email->setTemplateId(config('services.sendgrid.template_id'));
         $email->addDynamicTemplateDatas([
             'titleText' => 'Dynamic Title Text!',
             'firstParagraph' => 'This is an example paragraph text.',
@@ -73,6 +82,9 @@ class EmailSendTestCommand extends Command
             // Though it's recommended to just link to an external image, because it's supported in all email clients.
             'image' => "cid:$contentId",
         ]);
+
+        /* Send */
+
         $emailResponse = $sg->send($email);
         if (($statusCode = $emailResponse->statusCode()) !== 202) {
             throw new \RuntimeException("Could not send email. Status code $statusCode:\n{$emailResponse->body()}");
