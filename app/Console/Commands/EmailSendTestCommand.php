@@ -75,6 +75,14 @@ class EmailSendTestCommand extends Command
         $email->addDynamicTemplateDatas([
             'titleText' => 'Dynamic Title Text!',
             'firstParagraph' => 'This is an example paragraph text.',
+            'exampleArray' => [
+                [
+                    'exampleParagraph' => 'Array paragraph 1',
+                ],
+                [
+                    'exampleParagraph' => 'Array paragraph 2',
+                ],
+            ],
             // This is how you set the subject for SendGrid template emails if you want a dynamic subject.
             // Also make sure that the template on the SendGrid interface has the subject: {{subject}}
             'subject' => 'Test subject',
